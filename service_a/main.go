@@ -80,7 +80,7 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte(response))
 }
 
-func init() {
+func Init() {
 
 	ctx := context.Background()
 	shutdown, err := ot.InitProvider("service_a", "ot-collector:4317")
@@ -95,6 +95,7 @@ func init() {
 }
 
 func main() {
+	Init()
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	http.HandleFunc("/weather", HandleRequest)
 	log.Println("Server started at :8080")
