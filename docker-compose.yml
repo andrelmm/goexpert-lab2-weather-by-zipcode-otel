@@ -17,9 +17,9 @@ services:
   otel-collector:
     image: otel/opentelemetry-collector:latest
     restart: always
-    command: ["--config=/etc/otel-collector-config.yaml"]
+    command: ["--config=/etc/ot-collector-config.yaml"]
     volumes:
-      - ./.docker/otel-collector-config.yaml:/etc/otel-collector-config.yaml
+      - ./.docker/ot-collector-config.yaml:/etc/ot-collector-config.yaml
     ports:
       - "1888:1888"   # pprof extension
       - "13133:13133" # health_check extension

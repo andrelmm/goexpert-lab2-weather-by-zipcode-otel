@@ -1,4 +1,4 @@
-package otel
+package ot
 
 import (
 	"context"
@@ -15,7 +15,7 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.21.0"
 )
 
-func initProvider(serviceName, collectorURL string) (func(context.Context) error, error) {
+func InitProvider(serviceName, collectorURL string) (func(context.Context) error, error) {
 	ctx := context.Background()
 
 	res, err := resource.New(ctx,

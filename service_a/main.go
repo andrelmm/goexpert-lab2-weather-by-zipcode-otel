@@ -1,12 +1,14 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"fmt"
+	"github.com/andrelmm/goexpert-lab2-weather-by-zipcode-otel/ot"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 	"io"
-	"lab2-weather-by-zipcode-otel/otel"
 	"log"
 	"net/http"
 	"os"
@@ -42,6 +44,13 @@ func forwardToServiceB(cep string) (int, string, error) {
 }
 
 func HandleRequest(w http.ResponseWriter, r *http.Request) {
+
+	carrier := propagation.HeaderCarrier(r.Header)
+	ctx := r.Context()
+	ctx = otel.GetTextMapPropagator().Extract(ctx, carrier)
+	ctx, span := otel.Tracer("service_a").Start(ctx, "HandleRequest")
+	defer span.End()
+
 	if r.Method != http.MethodPost {
 		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
 		return
@@ -72,7 +81,9 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 }
 
 func init() {
-	shutdown, err := initProvider("service_a", "otel-collector:4317")
+
+	ctx := context.Background()
+	shutdown, err := ot.InitProvider("service_a", "ot-collector:4317")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -81,8 +92,6 @@ func init() {
 			log.Fatal("failed to shutdown TracerProvider: %w", err)
 		}
 	}()
-
-	tracer := otel.Tracer("microservice-tracer")
 }
 
 func main() {
