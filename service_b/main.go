@@ -1,10 +1,14 @@
 package main
 
 import (
+	"context"
 	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/andrelmm/goexpert-lab2-weather-by-zipcode-otel/ot"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
 	"io"
 	"log"
 	"net/http"
@@ -109,6 +113,13 @@ func convertTemperatures(tempC float64) Temperature {
 }
 
 func HandleRequest(w http.ResponseWriter, r *http.Request) {
+
+	carrier := propagation.HeaderCarrier(r.Header)
+	ctx := r.Context()
+	ctx = otel.GetTextMapPropagator().Extract(ctx, carrier)
+	ctx, span := otel.Tracer("service_b").Start(ctx, "HandleRequest")
+	defer span.End()
+
 	zip := r.URL.Query().Get("zip")
 	if len(zip) != 8 {
 		http.Error(w, "invalid zipcode", http.StatusUnprocessableEntity)
@@ -130,6 +141,20 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	temperatures := convertTemperatures(temperatureResponse.Current.TempC)
 
 	_ = json.NewEncoder(w).Encode(temperatures)
+}
+
+func init() {
+
+	ctx := context.Background()
+	shutdown, err := ot.InitProvider("service_b", "ot-collector:4317")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer func() {
+		if err := shutdown(ctx); err != nil {
+			log.Fatal("failed to shutdown TracerProvider: %w", err)
+		}
+	}()
 }
 
 func main() {
