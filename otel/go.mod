@@ -1,4 +1,4 @@
-module github.com/andrelmm/goexpert-lab2-weather-by-zipcode-otel
+module github.com/andrelmm/goexpert-lab2-weather-by-zipcode-otel/otel
 
 go 1.21.0
 
