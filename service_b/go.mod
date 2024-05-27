@@ -27,4 +27,4 @@ require (
 	google.golang.org/protobuf v1.34.1 // indirect
 )
 
-replace github.com/andrelmm/goexpert-lab2-weather-by-zipcode-otel/shared => ./../shared
+replace github.com/andrelmm/goexpert-lab2-weather-by-zipcode-otel/shared => ../shared
