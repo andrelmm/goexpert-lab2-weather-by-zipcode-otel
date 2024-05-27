@@ -6,7 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/andrelmm/goexpert-lab2-weather-by-zipcode-otel/ot"
+	"github.com/andrelmm/goexpert-lab2-weather-by-zipcode-otel/shared"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
 	"io"
@@ -146,7 +146,7 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 func Init() {
 
 	ctx := context.Background()
-	shutdown, err := ot.InitProvider("service_b", "ot-collector:4317")
+	shutdown, err := shared.InitProvider("service_b", "shared-collector:4317")
 	if err != nil {
 		log.Fatal(err)
 	}

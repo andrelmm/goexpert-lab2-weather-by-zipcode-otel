@@ -1,4 +1,4 @@
-package ot
+package shared
 
 import (
 	"context"

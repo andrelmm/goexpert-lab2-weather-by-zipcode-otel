@@ -17,9 +17,9 @@ services:
   otel-collector:
     image: otel/opentelemetry-collector:latest
     restart: always
-    command: ["--config=/etc/ot-collector-config.yaml"]
+    command: ["--config=/etc/shared-collector-config.yaml"]
     volumes:
-      - ./.docker/ot-collector-config.yaml:/etc/ot-collector-config.yaml
+      - ./.docker/shared-collector-config.yaml:/etc/shared-collector-config.yaml
     ports:
       - "1888:1888"   # pprof extension
       - "13133:13133" # health_check extension
@@ -29,7 +29,8 @@ services:
   service-a:
     container_name: go-service-a
     build:
-      context: ./service_a
+      context: .
+      dockerfile: service_a/Dockerfile
     environment:
       - SERVICE_B_BASE_URL=http://service-b:8081
     ports:
@@ -41,7 +42,8 @@ services:
   service-b:
     container_name: go-service-b
     build:
-      context: ./service_b
+      context: .
+      dockerfile: service_b/Dockerfile
     ports:
       - "8081:8081"
     depends_on:
