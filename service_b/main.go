@@ -9,6 +9,7 @@ import (
 	"github.com/andrelmm/goexpert-lab2-weather-by-zipcode-otel/shared"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/trace"
 	"io"
 	"log"
 	"net/http"
@@ -33,6 +34,7 @@ type WeatherAPIResponse struct {
 
 var viaCepAPI = "https://viacep.com.br/ws/%s/json/"
 var weatherAPI = "https://api.weatherapi.com/v1/current.json?key=2abdcba66a8b4196b4402638242702&q=%s"
+var tracer trace.Tracer
 
 func getLocation(zip string) (*ViaCepResponse, error) {
 	log.Printf("Getting location for ZIP code: %s", zip)
@@ -117,7 +119,7 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	carrier := propagation.HeaderCarrier(r.Header)
 	ctx := r.Context()
 	ctx = otel.GetTextMapPropagator().Extract(ctx, carrier)
-	ctx, span := otel.Tracer("service_b").Start(ctx, "HandleRequest")
+	ctx, span := tracer.Start(ctx, "service_b_HandleRequest")
 	defer span.End()
 
 	zip := r.URL.Query().Get("zip")
@@ -143,10 +145,9 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewEncoder(w).Encode(temperatures)
 }
 
-func Init() {
-
+func main() {
 	ctx := context.Background()
-	shutdown, err := shared.InitProvider("service_b", "shared-collector:4317")
+	shutdown, err := shared.InitProvider("service_b", "otel-collector:4317")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -155,10 +156,8 @@ func Init() {
 			log.Fatal("failed to shutdown TracerProvider: %w", err)
 		}
 	}()
-}
 
-func main() {
-	Init()
+	tracer = otel.Tracer("microservice-tracer")
 	http.DefaultTransport.(*http.Transport).TLSClientConfig = &tls.Config{InsecureSkipVerify: true}
 	http.HandleFunc("/weather", HandleRequest)
 	log.Println("Server started at :8081")
