@@ -64,9 +64,10 @@ To test the setup, you can make a POST request to service_a to get the weather i
 **Method:** POST
 **Body:**
 
+
 ```json
 {
-    "zipcode": "80440000"
+    "cep": "80440000"
 }
 ```
 
