@@ -43,7 +43,7 @@ To run the project, use Docker Compose. This will build and start both services 
 ### Steps
 1. Clone the repository:
     ```bash
-    git clone https://github.com/yourusername/lab2-weather-by-zipcode-otel.git
+    git clone https://github.com/andrelmm/lab2-weather-by-zipcode-otel.git
     cd lab2-weather-by-zipcode-otel
     ```
 
