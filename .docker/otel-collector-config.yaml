@@ -9,6 +9,8 @@ exporters:
     endpoint: jaeger-all-in-one:4317
     tls:
       insecure: true
+  zipkin:
+    endpoint: "http://zipkin:9411/api/v2/spans"
 
 processors:
   batch:
@@ -18,4 +20,4 @@ service:
     traces:
       receivers: [otlp]
       processors: [batch]
-      exporters: [logging, otlp]
+      exporters: [logging, otlp, zipkin]

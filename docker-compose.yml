@@ -8,7 +8,7 @@ services:
       - "14268"
       - "14250"
 
-  zipkin-all-in-one:
+  zipkin:
     image: openzipkin/zipkin:latest
     restart: always
     ports:
