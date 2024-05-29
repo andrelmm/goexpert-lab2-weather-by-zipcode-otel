@@ -81,7 +81,10 @@ func getLocation(zip string) (*ViaCepResponse, error) {
 	return &viaCepResponse, nil
 }
 
-func getTemperature(location string) (*WeatherAPIResponse, error) {
+func getTemperature(location string, ctx context.Context) (*WeatherAPIResponse, error) {
+
+	ctx, span := tracer.Start(ctx, "service_b_getTemperature")
+	defer span.End()
 
 	encodedLocation := url.QueryEscape(location)
 
@@ -134,7 +137,7 @@ func HandleRequest(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	temperatureResponse, err := getTemperature(cepResponse.Location)
+	temperatureResponse, err := getTemperature(cepResponse.Location, ctx)
 	if err != nil {
 		http.Error(w, "can not find weather information", http.StatusNotFound)
 		return
