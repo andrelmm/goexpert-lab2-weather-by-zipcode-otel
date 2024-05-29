@@ -44,8 +44,10 @@ To run the project, use Docker Compose. This will build and start both services 
 1. Clone the repository:
     ```bash
     git clone https://github.com/andrelmm/goexpert-lab2-weather-by-zipcode-otel.git
-    cd goexpert-lab2-weather-by-zipcode-otel
     ```
+   ```bash
+    cd goexpert-lab2-weather-by-zipcode-otel
+    ````
 
 2. Build and start the services:
     ```bash
